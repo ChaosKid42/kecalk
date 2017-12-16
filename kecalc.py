@@ -13,7 +13,7 @@ app.url_map.converters['date'] = DateConverter
 
 @app.route('/menu/<date:date>', methods=['GET'])
 def menu(date):
-  db = MySQLdb.connect(user='kecalc', passwd='test', db='kecalc')
+  db = MySQLdb.connect(user='kecalc', passwd='k8Calc', db='kecalc')
   c = db.cursor(MySQLdb.cursors.DictCursor)
   c.execute('''SELECT `me_date`, `me_date_id`, `me_food`, `me_measure`,
    `me_amount`, `me_ke` FROM `menu` WHERE me_date=%s
