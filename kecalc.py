@@ -21,7 +21,7 @@ def menu(date):
   c = db.cursor(MySQLdb.cursors.DictCursor)
   c.execute('''SELECT `me_food`, `me_measure`,
    `me_amount`, `me_ke` FROM `menu` WHERE me_date=%s
-   ORDER BY me_date_id ASC''', (date,))
+   ORDER BY me_date_id ASC LIMIT 10''', (date,))
   result = c.fetchall()
   c.close()
   db.close()
