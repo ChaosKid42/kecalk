@@ -15,7 +15,7 @@ app.url_map.converters['date'] = DateConverter
 def menu(date):
   db = MySQLdb.connect(user='kecalc', passwd='k8Calc', db='kecalc')
   c = db.cursor(MySQLdb.cursors.DictCursor)
-  c.execute('''SELECT `me_date`, `me_date_id`, `me_food`, `me_measure`,
+  c.execute('''SELECT `me_food`, `me_measure`,
    `me_amount`, `me_ke` FROM `menu` WHERE me_date=%s
    ORDER BY me_date_id ASC''', (date,))
   
