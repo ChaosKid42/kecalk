@@ -1,0 +1,82 @@
+Die Installation der kecalc-Serverkomponente auf Deinem raspi sollte etwa wie folgt gehen:
+
+0. Voraussetzungen:
+
+mariadb läuft und die Tabellen von kecalc sind in der DB "kecalc" des Users "kecalc" mit dem Passwort "k8Calc" eingerichtet. Der User "kecalc" darf sich von localhost anmelden.
+
+
+1. notwendige Pakate installieren:
+
+apt install apache2 python3 libapache2-mod-wsgi-py3 python3-flask python3-mysqldb python3-sqlalchemy unzip
+
+
+2. die Datei kecalc.zip auf den raspi kopieren und dort entpacken:
+
+unzip kecalc.zip
+cd kecalc
+
+3. mit nano in der ersten Zeile "python" durch "python3" ersetzen
+
+nano kecalc.py
+
+4. zum root-User machen:
+
+sudo -s
+
+5. nun als root-User die folgenden Kommandos ausführen:
+
+mkdir /srv/kecalc
+touch /var/log/kecalc.log
+chown www-data.www-data /var/log/kecalc.log
+cp *.py *.wsgi /srv/kecalc/
+cp kecalc.conf /etc/apache2/conf-available/
+ln -s ../conf-available/kecalc.conf /etc/apache2/conf-enabled/kecalc.conf
+systemctl restart apache2.service
+
+5. Mit einem Browser folgende URL aufrufen
+
+aufrufen von http://<hostname-vom-raspi>/kecalc/menu/2017-12-18
+
+
+Da sollte dann so etwas kommen:
+
+
+[
+  {
+    "me_amount": 8, 
+    "me_food": "Gefl\u00fcgelk\u00f6ttbul", 
+    "me_ke": 0.6, 
+    "me_measure": "St\u00fcck"
+  }, 
+  {
+    "me_amount": 100, 
+    "me_food": "Gefl\u00fcgelso\u00dfe", 
+    "me_ke": 0.5, 
+    "me_measure": "g"
+  }, 
+  {
+    "me_amount": 100, 
+    "me_food": "Karotten/Rosenk", 
+    "me_ke": 0.0, 
+    "me_measure": "g"
+  }, 
+  {
+    "me_amount": 100, 
+    "me_food": "Vollkornreis", 
+    "me_ke": 2.9, 
+    "me_measure": "g"
+  }, 
+  {
+    "me_amount": 100, 
+    "me_food": "Chinakohl-Manda", 
+    "me_ke": 2.7, 
+    "me_measure": "g"
+  }, 
+  {
+    "me_amount": 100, 
+    "me_food": "Gem\u00fcsesticks", 
+    "me_ke": 0.0, 
+    "me_measure": "g"
+  }
+]
+

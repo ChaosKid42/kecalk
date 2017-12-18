@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from flask import Flask, jsonify
-import MySQLdb
+import sqlalchemy
 
 from dateconverter import DateConverter
 
@@ -15,31 +15,25 @@ DBNAME = 'kecalc'
 DBUSER = 'kecalc'
 DBPASS = 'k8Calc'
 
+connstr = 'mysql+mysqldb://{}:{}@/{}'.format(DBUSER, DBPASS, DBNAME)
+engine = sqlalchemy.create_engine(connstr, pool_recycle=3600)
+engine.connect()
+
 @app.route('/menu/<date:date>', methods=['GET'])
 def menu(date):
-  db = MySQLdb.connect(user=DBUSER, passwd=DBPASS, db=DBNAME)
-  c = db.cursor(MySQLdb.cursors.DictCursor)
-  c.execute('''SELECT `me_food`, `me_measure`,
-   `me_amount`, `me_ke` FROM `menu` WHERE me_date=%s
-   ORDER BY me_date_id ASC LIMIT 10''', (date,))
-  result = c.fetchall()
-  c.close()
-  db.close()
+  s = sqlalchemy.text('''SELECT `me_food`, `me_measure`,
+    `me_amount`, `me_ke` FROM `menu` WHERE me_date=:date
+    ORDER BY me_date_id ASC LIMIT 10''')
+  result = engine.execute(s, date = date).fetchall()
   
-  return jsonify(result)
+  return jsonify([dict(r) for r in result])
 
 @app.route('/params', methods=['GET'])
 def params():
-  db = MySQLdb.connect(user=DBUSER, passwd=DBPASS, db=DBNAME)
-  c = db.cursor(MySQLdb.cursors.DictCursor)
-  c.execute('SELECT `pa_name`, `pa_value` FROM `params`')
-  result = {}
-  for row in c:
-    result[row['pa_name']] = row['pa_value']
-  c.close()
-  db.close()
+  s = sqlalchemy.text('SELECT `pa_name`, `pa_value` FROM `params`')
+  result = engine.execute(s).fetchall()
 
-  return jsonify(result)
+  return jsonify({r['pa_name']: r['pa_value'] for r in result})
 
 # run the app for debug purposes.
 if __name__ == '__main__':
