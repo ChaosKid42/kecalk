@@ -17,21 +17,24 @@ DBPASS = 'k8Calc'
 
 connstr = 'mysql+mysqldb://{}:{}@/{}'.format(DBUSER, DBPASS, DBNAME)
 engine = sqlalchemy.create_engine(connstr, pool_recycle=3600)
-engine.connect()
 
 @app.route('/menu/<date:date>', methods=['GET'])
 def menu(date):
   s = sqlalchemy.text('''SELECT `me_food`, `me_measure`,
     `me_amount`, `me_ke` FROM `menu` WHERE me_date=:date
     ORDER BY me_date_id ASC LIMIT 10''')
-  result = engine.execute(s, date = date).fetchall()
+  conn = engine.connect()
+  result = conn.execute(s, date = date).fetchall()
+  conn.close()
   
   return jsonify([dict(r) for r in result])
 
 @app.route('/params', methods=['GET'])
 def params():
   s = sqlalchemy.text('SELECT `pa_name`, `pa_value` FROM `params`')
-  result = engine.execute(s).fetchall()
+  conn = engine.connect()
+  result = conn.execute(s).fetchall()
+  conn.close()
 
   return jsonify({r['pa_name']: r['pa_value'] for r in result})
 
